@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -15,7 +16,8 @@ class UserController extends Controller
                 'ime' => 'required|min:3',
                 'prezime' => 'required',
                 'email' => 'required|email',
-                'lozinka' => 'required|min:5|regex:/^(?=.*[A-Z])(?=.*\d).+$/',
+               /*  'lozinka' => 'required|min:5|regex:/^(?=.*[A-Z])(?=.*\d).+$/', */
+                'lozinka' => 'required',
                 'potvrda_lozinke' => 'required|same:lozinka'
             ],
             [
@@ -46,5 +48,35 @@ class UserController extends Controller
         $korisnik->create($podaci);
 
         return response()->json(['poruka' => 'Uspjesna registracija']);
+    }
+
+    public function loginUser(Request $request){
+        $data = $request-> validate([
+            'email' => 'required',
+            'lozinka' => 'required'
+        ],
+        [
+            'email.required' => 'Email je obavezan',
+            'lozinka.required' => 'Lozinka je obavezna'
+        ]
+    );
+
+
+
+    if (Auth::attempt($data)) {
+        // Korisnik se uspješno prijavio
+        $user = Auth::user();
+        dd($user);
+
+        return response()->json(['poruka' => 'Uspješna prijava', 'user' => $user]);
+    } else {
+        // Prijavljivanje nije uspjelo
+
+        return response()->json(['poruka' => 'Neuspješna prijava']);
+
+
+    }
+
+
     }
 }
