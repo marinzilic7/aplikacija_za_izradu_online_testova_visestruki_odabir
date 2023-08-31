@@ -25,11 +25,11 @@
                         class="form-control"
                         id="exampleInputPassword1"
                         placeholder="Unesite vasu lozinku"
-                        v-model="form.lozinka"
+                        v-model="form.password"
                     />
                 </div>
-                <p v-if="errors.lozinka" class="text-danger">
-                    {{ errors.lozinka[0] }}
+                <p v-if="errors.password" class="text-danger">
+                    {{ errors.password[0] }}
                 </p>
 
                 <button type="submit" class="btn btn-primary w-100 mt-4">
@@ -55,7 +55,7 @@ export default {
         return {
             form: {
                 email: "",
-                lozinka: "",
+                password: "",
             },
             csrfToken: "",
             POST: "",
@@ -83,7 +83,7 @@ export default {
         loginUser() {
             const Podaci = {
                 email: this.form.email,
-                lozinka: this.form.lozinka,
+                password: this.form.password,
             };
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
 

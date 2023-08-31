@@ -11,7 +11,7 @@ class User extends Model implements Authenticatable
 {
     use AuthenticatableTrait;
     protected $fillable = [
-        'ime', 'prezime', 'email', 'lozinka','potvrda_lozinke'
+        'ime', 'prezime', 'email', 'password','potvrda_lozinke'
     ];
 
 

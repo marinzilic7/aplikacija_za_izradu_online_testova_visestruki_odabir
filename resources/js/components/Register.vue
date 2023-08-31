@@ -53,11 +53,11 @@
                         class="form-control"
                         id="exampleInputPassword1"
                         placeholder="Unesite vasu lozinku"
-                        v-model="form.lozinka"
+                        v-model="form.password"
                     />
                 </div>
-                 <p v-if="errors.lozinka" class="text-danger">
-                                {{ errors.lozinka[0] }}
+                 <p v-if="errors.password" class="text-danger">
+                                {{ errors.password[0] }}
                             </p>
                 <div class="form-group mt-4">
                     <label for="exampleInputPassword1">Ponovi lozinku</label>
@@ -91,7 +91,7 @@ export default {
                 ime: "",
                 prezime: "",
                 email: "",
-                lozinka: "",
+                password: "",
                 potvrda_lozinke: "",
             },
             csrfToken: "",
@@ -121,7 +121,7 @@ export default {
                 ime:this.form.ime,
                 prezime:this.form.prezime,
                 email:this.form.email,
-                lozinka:this.form.lozinka,
+                password:this.form.password,
                 potvrda_lozinke:this.form.potvrda_lozinke
             };
 
@@ -136,7 +136,7 @@ export default {
                         ime: "",
                         prezime: "",
                         email: "",
-                        lozinka: "",
+                        password: "",
                         potvrda_lozinke: "",
                     };
                     this.errors = {};

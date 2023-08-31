@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('ime');
             $table->string('prezime');
             $table->string('email');
-            $table->string('lozinka');
+            $table->string('password');
             $table->string('potvrda_lozinke');
             $table->timestamps();
         });
