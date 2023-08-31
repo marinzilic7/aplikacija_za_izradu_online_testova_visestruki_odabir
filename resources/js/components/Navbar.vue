@@ -21,7 +21,7 @@ import { RouterLink, RouterView } from "vue-router";
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <RouterLink class="text-light text-decoration-none" to="/">Home</RouterLink>
+                        <RouterLink class="text-light text-decoration-none  " to="/">Home</RouterLink>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
