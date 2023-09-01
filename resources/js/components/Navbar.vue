@@ -22,10 +22,45 @@ import { RouterLink, RouterView } from "vue-router";
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
                         <RouterLink
-                            class="text-light text-decoration-none"
+                            class="text-light text-decoration-none nav-link"
                             to="/"
                             >Home</RouterLink
                         >
+                    </li>
+                    <li class="nav-item">
+                        <div class="dropdown">
+                            <a
+                                class="btn btn-primary dropdown-toggle"
+                                href="#"
+                                role="button"
+                                id="dropdownMenuLink"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                Test
+                            </a>
+
+                            <ul
+                                class="dropdown-menu"
+                                aria-labelledby="dropdownMenuLink"
+                            >
+                                <li>
+                                    <RouterLink
+                                        class="text-dark text-decoration-none nav-link"
+                                        to="/test"
+                                        >Dodaj test</RouterLink
+                                    >
+                                </li>
+                                <li>
+                                    <RouterLink
+                                        class="text-dark text-decoration-none nav-link"
+                                        to="/test_list"
+                                        >Lista testova</RouterLink
+                                    >
+                                </li>
+
+                            </ul>
+                        </div>
                     </li>
                 </ul>
                 <ul class="navbar-nav ms-auto">
@@ -104,16 +139,19 @@ export default {
                     console.log(error);
                 });
         },
-        odjava(){
-            axios.post("/logout").then((response) => {
-                this.isLoggedIn = false;
-                this.loggedInUser = null;
-                this.$store.dispatch("logout");
-                this.$router.push("/login");
-            }).catch((error) => {
-                console.log(error);
-            })
-        }
+        odjava() {
+            axios
+                .post("/logout")
+                .then((response) => {
+                    this.isLoggedIn = false;
+                    this.loggedInUser = null;
+                    this.$store.dispatch("logout");
+                    this.$router.push("/login");
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
     },
 };
 </script>
