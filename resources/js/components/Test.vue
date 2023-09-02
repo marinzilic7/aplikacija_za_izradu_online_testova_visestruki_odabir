@@ -97,19 +97,36 @@
                 >
                     <div class="accordion-body">
                         <div>
-                            <form>
+                            <form @submit.prevent="dodajPitanje()">
+                                <input type="hidden" v-model="this.POST" />
+                                <input
+                                    type="hidden"
+                                    name=""
+                                    v-model="this.csrfToken"
+                                />
                                 <div class="form-group">
+                                    <label for="exampleInputEmail1"
+                                        >Odaberi test</label
+                                    >
                                     <select
                                         class="form-select form-select-sm"
                                         aria-label="Small select example"
+                                        v-model="pitanje.test_id"
                                     >
-                                        <option selected>
-                                            Open this select menu
+                                        <option
+                                            v-for="test in tests"
+                                            :value="test.id"
+                                            :key="test.id"
+                                        >
+                                            {{ test.ime }}
                                         </option>
-                                        <option value="1">One</option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
                                     </select>
+                                    <p
+                                        v-if="errors.test_id"
+                                        class="text-danger"
+                                    >
+                                        {{ errors.test_id[0] }}
+                                    </p>
                                 </div>
                                 <div class="form-group mt-3">
                                     <label for="exampleInputEmail1"
@@ -121,8 +138,12 @@
                                         id="exampleInputEmail1"
                                         aria-describedby="emailHelp"
                                         placeholder="Unesite pitanje"
+                                        v-model="pitanje.pitanje"
                                     />
                                 </div>
+                                <p v-if="errors.pitanje" class="text-danger">
+                                    {{ errors.pitanje[0] }}
+                                </p>
                                 <div class="form-group mt-3">
                                     <label for="exampleInputEmail1"
                                         >Odgovor 1</label
@@ -133,8 +154,12 @@
                                         id="exampleInputEmail1"
                                         aria-describedby="emailHelp"
                                         placeholder="Unesite odgovor"
+                                        v-model="pitanje.odgovor1"
                                     />
                                 </div>
+                                <p v-if="errors.odgovor1" class="text-danger">
+                                    {{ errors.odgovor1[0] }}
+                                </p>
                                 <div class="form-group mt-3">
                                     <label for="exampleInputEmail1"
                                         >Odgovor 2</label
@@ -145,8 +170,12 @@
                                         id="exampleInputEmail1"
                                         aria-describedby="emailHelp"
                                         placeholder="Unesite odgovor"
+                                        v-model="pitanje.odgovor2"
                                     />
                                 </div>
+                                <p v-if="errors.odgovor2" class="text-danger">
+                                    {{ errors.odgovor2[0] }}
+                                </p>
                                 <div class="form-group mt-3">
                                     <label for="exampleInputEmail1"
                                         >Odgovor 3</label
@@ -157,12 +186,24 @@
                                         id="exampleInputEmail1"
                                         aria-describedby="emailHelp"
                                         placeholder="Unesite odgovor"
+                                        v-model="pitanje.odgovor3"
                                     />
                                 </div>
-
-                                <button type="submit" class="btn btn-primary mt-3 w-100">
+                                <p v-if="errors.odgovor3" class="text-danger">
+                                    {{ errors.odgovor3[0] }}
+                                </p>
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary mt-3 w-100"
+                                >
                                     Dodaj pitanje
                                 </button>
+                                <div
+                                    v-if="successQuestion"
+                                    class="alert alert-info mt-4 w-25 m-auto text-center"
+                                >
+                                    {{ poruka }}
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -177,19 +218,35 @@ import axios from "axios";
 export default {
     data() {
         return {
+            /* TEST */
             test: {
                 ime: "",
                 opis: "",
             },
+
+            tests: [],
             csrfToken: "",
             POST: "",
             errors: {},
             poruka: "",
             successTest: false,
+
+            /* PITANJE  */
+            pitanje: {
+                test_id: "",
+                pitanje: "",
+                odgovor1: "",
+                odgovor2: "",
+                odgovor3: "",
+            },
+            successPitanje: false,
         };
     },
     computed() {
         this.fetchCsrfToken();
+    },
+    created() {
+        this.getTest();
     },
     methods: {
         fetchCsrfToken() {
@@ -221,6 +278,67 @@ export default {
                     this.form = {
                         ime: "",
                         opis: "",
+                    };
+                    this.errors = {};
+                })
+                .catch((error) => {
+                    if (error.response && error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                        this.postojiEmail = true;
+                    } else {
+                        console.log(error);
+                    }
+                });
+        },
+
+        getTest() {
+            axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
+            axios
+                .get("/getTest")
+                .then((response) => {
+                    this.tests = response.data.map((test) => ({
+                        ...test,
+                        created_at: new Date(
+                            test.created_at
+                        ).toLocaleDateString("hr-HR", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                        }),
+                    }));
+
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+
+        dodajPitanje() {
+            const Pitanje = {
+                test_id: this.pitanje.test_id,
+                pitanje: this.pitanje.pitanje,
+                odgovor1: this.pitanje.odgovor1,
+                odgovor2: this.pitanje.odgovor2,
+                odgovor3: this.pitanje.odgovor3,
+            };
+
+            axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
+
+            axios
+                .post("/addQuestion", Pitanje)
+                .then((response) => {
+                    this.poruka = response.data.poruka;
+                    this.successQuestion = true;
+                    setTimeout(() => {
+                        this.successQuestion = false; // Sakrij poruku
+                    }, 1500);
+                    this.form = {
+                        test_id: "",
+                        pitanje: "",
+                        odgovor1: "",
+                        odgovor2: "",
+                        odgovor3: "",
                     };
                     this.errors = {};
                 })

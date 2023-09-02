@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -18,7 +19,9 @@ Route::post('/addTest',[TestController::class,'addTest']);
 Route::get('/getTest',[TestController::class,'getTest']);
 Route::post('/deleteTest/{id}',[TestController::class,'deleteTest']);
 
+/* Pitanje */
 
+Route::post('/addQuestion',[QuestionController::class,'addQuestion']);
 
 Route::get('/{any}', function () {
     return view('welcome');
