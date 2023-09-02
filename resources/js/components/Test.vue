@@ -76,6 +76,98 @@
                     </div>
                 </div>
             </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button
+                        class="accordion-button collapsed"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapseThree"
+                        aria-expanded="false"
+                        aria-controls="collapseThree"
+                    >
+                        Dodaj pitanje
+                    </button>
+                </h2>
+                <div
+                    id="collapseThree"
+                    class="accordion-collapse collapse"
+                    aria-labelledby="headingThree"
+                    data-bs-parent="#accordionExample"
+                >
+                    <div class="accordion-body">
+                        <div>
+                            <form>
+                                <div class="form-group">
+                                    <select
+                                        class="form-select form-select-sm"
+                                        aria-label="Small select example"
+                                    >
+                                        <option selected>
+                                            Open this select menu
+                                        </option>
+                                        <option value="1">One</option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label for="exampleInputEmail1"
+                                        >Pitanje</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="exampleInputEmail1"
+                                        aria-describedby="emailHelp"
+                                        placeholder="Unesite pitanje"
+                                    />
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label for="exampleInputEmail1"
+                                        >Odgovor 1</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="exampleInputEmail1"
+                                        aria-describedby="emailHelp"
+                                        placeholder="Unesite odgovor"
+                                    />
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label for="exampleInputEmail1"
+                                        >Odgovor 2</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="exampleInputEmail1"
+                                        aria-describedby="emailHelp"
+                                        placeholder="Unesite odgovor"
+                                    />
+                                </div>
+                                <div class="form-group mt-3">
+                                    <label for="exampleInputEmail1"
+                                        >Odgovor 3</label
+                                    >
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        id="exampleInputEmail1"
+                                        aria-describedby="emailHelp"
+                                        placeholder="Unesite odgovor"
+                                    />
+                                </div>
+
+                                <button type="submit" class="btn btn-primary mt-3 w-100">
+                                    Dodaj pitanje
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
