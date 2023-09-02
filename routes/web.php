@@ -19,6 +19,7 @@ Route::get('/getTest',[TestController::class,'getTest']);
 Route::post('/deleteTest/{id}',[TestController::class,'deleteTest']);
 
 
+
 Route::get('/{any}', function () {
     return view('welcome');
 })->where('any', '^(?!api).*$');

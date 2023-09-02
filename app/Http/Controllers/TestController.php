@@ -22,12 +22,13 @@ class TestController extends Controller
         );
 
         $test = new Test();
+        $data['user_id'] = auth()->id();
         $test->create($data);
         return response()->json(['poruka' => 'Test dodan']);
     }
 
     public function getTest(){
-        $test = Test::get();
+        $test = Test::with('user')->get();
         return response()->json($test);
     }
 

@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Test extends Model
 {
     protected $fillable = [
-        'ime', 'opis'
+        'user_id', 'ime', 'opis'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
     use HasFactory;
 }
