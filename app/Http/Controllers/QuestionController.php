@@ -14,20 +14,21 @@ class QuestionController extends Controller
             [
                 'test_id' => 'required',
                 'pitanje' => 'required',
-                'odgovor1' => 'required',
-                'odgovor2' => 'required',
-                'odgovor3' => 'required',
+
             ],
             [
                 'pitanje.required' => 'Obazeno.',
-                'odgovor1.required' => 'Obavezno.',
-                'odgovor2.required' => 'Obavezno.',
-                'odgovor3.required' => 'Obavezno.',
+
             ]
         );
 
         $pitanje = new Question();
         $pitanje->create($data);
         return response()->json(['poruka' => 'Uspjesno dodano']);
+    }
+
+    public function getPitanje(){
+        $test = Question::get();
+        return response()->json($test);
     }
 }

@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
+
 use Illuminate\Support\Facades\Route;
 
 
@@ -22,6 +24,12 @@ Route::post('/deleteTest/{id}',[TestController::class,'deleteTest']);
 /* Pitanje */
 
 Route::post('/addQuestion',[QuestionController::class,'addQuestion']);
+Route::get('/getPitanje',[QuestionController::class,'getPitanje']);
+
+/* Odgovor */
+
+Route::post('/addAnswer',[AnswerController::class,'addAnswer']);
+
 
 Route::get('/{any}', function () {
     return view('welcome');
