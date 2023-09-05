@@ -19,6 +19,8 @@
                                 class="d-flex flex-row justify-content-between align-items-center"
                             >
                                 <h4>{{ tests.ime }}</h4>
+                                <p><span>{{trenutniBroj}}</span> of  {{ tests.questions.length }} </p>
+
                             </div>
                             <p>{{ tests.opis }}</p>
                         </div>
@@ -92,6 +94,7 @@ export default {
             currentQuestionIndex: 0, // Dodajte trenutni indeks pitanja
             selectedTestId: '',
             showTest:false,
+            trenutniBroj:1,
         };
     },
     created() {
@@ -124,12 +127,14 @@ export default {
         nextQuestion() {
             if (this.currentQuestionIndex < this.tests.questions.length - 1) {
                 this.currentQuestionIndex++;
+                this.trenutniBroj++;
             }
         },
 
         previousQuestion() {
             if (this.currentQuestionIndex > 0) {
                 this.currentQuestionIndex--;
+                this.trenutniBroj--;
             }
         },
 
