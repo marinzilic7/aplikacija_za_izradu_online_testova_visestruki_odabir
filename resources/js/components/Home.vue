@@ -57,11 +57,9 @@
                                 <label class="radio">
                                     <input
                                         :disabled="
-                                            pokaziOdgovor ||
-                                            isAnswerCorrect ||
-                                            tests.questions[
+                                            answeredQuestions.includes(
                                                 currentQuestionIndex
-                                            ].isAnswered
+                                            )
                                         "
                                         type="radio"
                                         :name="
@@ -94,12 +92,21 @@
                             </button>
                             <div>
                                 <button
+                                    :disabled="
+                                        answeredQuestions.includes(
+                                            currentQuestionIndex
+                                        )
+                                    "
                                     class="btn btn-primary btn-sm me-2"
                                     @click="spremiOdgovor()"
                                 >
                                     Spremi
                                 </button>
-                                <button
+
+                                <button v-if="(this.currentQuestionIndex === this.tests.questions.length - 1)" class="btn btn-warning btn-sm" @click="prikaziRezultat()">
+                                    Zavrsi test
+                                </button>
+                                <button v-else
                                     class="btn btn-sm btn-primary border-success align-items-center btn-success"
                                     type="button"
                                     @click="nextQuestion"
@@ -113,12 +120,15 @@
                                     Odgovor je netocan
                                 </span>
                             </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <div v-if="showResults">Polozili ste! Imali ste {{ totalPoints }} bodova od {{ zbrojiBodove }}</div>
+    <div v-if="showNegativeResult"> Niste polozili! Imali ste {{ totalPoints }} bodova od {{ zbrojiBodove }} </div>
 </template>
 
 <script>
@@ -139,13 +149,18 @@ export default {
             testAnswer: {
                 correct: "",
             },
-
+            answeredQuestions: [],
             isAnswered: false,
+            totalPoints: 0,
+            isTestFinished:false,
+            showResults:false,
+            showNegativeResult:false,
         };
     },
     created() {
         this.dohvatiTestove();
     },
+
     methods: {
         dohvatiTestove() {
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
@@ -176,7 +191,6 @@ export default {
                     this.currentQuestionIndex
                 ].isAnswered = true;
 
-
                 this.tests.questions[
                     this.currentQuestionIndex + 1
                 ].isAnswered = false;
@@ -196,6 +210,8 @@ export default {
             // Učitajte pitanja i odgovore za odabrani test na osnovu selectedTestId
             this.currentQuestionIndex = 0;
             this.trenutniBroj = 1;
+            this.zbrojiBodove = null;
+
             if (this.selectedTestId !== null) {
                 axios
                     .get(`/dohvatiTestove/${this.selectedTestId}`)
@@ -203,14 +219,10 @@ export default {
                         this.tests = response.data;
 
                         this.tests.questions.forEach((question) => {
-                            question.isAnswered = false
-                            console.log("Bodovi", question.bodovi);
+                            question.isAnswered = false;
+
                             this.zbrojiBodove =
                                 question.bodovi + this.zbrojiBodove;
-                            console.log(
-                                "Zbrojeni bodovi su",
-                                this.zbrojiBodove
-                            );
                         });
 
                         this.showTest = true;
@@ -222,22 +234,46 @@ export default {
         },
 
         spremiOdgovor() {
+
+            console.log("Prije novog spremanja", this.totalPoints);
             const selectedAnswerId = this.selectedAnswerId;
-            console.log("ID ODGOVORA", selectedAnswerId);
-            this.pokaziOdgovor = false;
-            if (selectedAnswerId == "Da") {
+            /* console.log("ID ODGOVORA", selectedAnswerId); */
+
+            let isCurrentAnswerCorrect = false; // Dodajte varijablu za trenutni odgovor
+            selectedAnswerId.forEach((element) => {
+                if (element == "Da") {
+                    isCurrentAnswerCorrect = true; // Postavite na true ako je odgovor točan
+                }else{
+                    isCurrentAnswerCorrect=false;
+                }
+            });
+
+            if (isCurrentAnswerCorrect) {
                 this.isAnswerCorrect = true;
-            } else {
+                this.totalPoints +=
+                    this.tests.questions[this.currentQuestionIndex].bodovi;
+                console.log(this.totalPoints);
+            } else if(isCurrentAnswerCorrect) {
                 this.isAnswerCorrect = false;
                 this.pokaziOdgovor = true;
+                console.log("NIJE TOCNO BRE")
             }
 
-
-
-
-
+            this.answeredQuestions.push(this.currentQuestionIndex);
 
         },
+
+        prikaziRezultat(){
+            let rez = this.zbrojiBodove / 2
+            console.log(this.tests.questions.length)
+            console.log("Ovo je 9 / 3 ", rez)
+            if(this.totalPoints >=  rez){
+                this.showResults = true;
+            }else{
+                this.showNegativeResult = true;
+            }
+
+        }
     },
 };
 </script>
