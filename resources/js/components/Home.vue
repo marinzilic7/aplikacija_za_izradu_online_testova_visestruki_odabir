@@ -1,6 +1,16 @@
 <template>
+    <div class="container mt-5 d-flex justify-content-center">
+        <div class="row col-lg-4">
+            <select v-model="selectedTestId" @change="selectTest" >
+                <option disabled selected value="">Odaberi test</option>
+                <option v-for="test in testovi" :value="test.id">
+                    {{ test.ime }}
+                </option>
+            </select>
+        </div>
+    </div>
     <div>
-        <div class="container mt-5">
+        <div class="container mt-5" v-if="showTest">
             <div class="d-flex justify-content-center row">
                 <div class="col-md-10 col-lg-10">
                     <div class="border shadow-lg">
@@ -78,7 +88,10 @@ export default {
     data() {
         return {
             tests: [],
+            testovi: [],
             currentQuestionIndex: 0, // Dodajte trenutni indeks pitanja
+            selectedTestId: '',
+            showTest:false,
         };
     },
     created() {
@@ -88,10 +101,18 @@ export default {
         dohvatiTestove() {
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
             axios
-                .get("/dohvatiTestove/1")
+                .get("/getTest")
                 .then((response) => {
-                    this.tests = response.data;
-                    console.log(response.data);
+                    this.testovi = response.data.map((test) => ({
+                        ...test,
+                        created_at: new Date(
+                            test.created_at
+                        ).toLocaleDateString("hr-HR", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                        }),
+                    }));
 
                     console.log(response.data);
                 })
@@ -109,6 +130,22 @@ export default {
         previousQuestion() {
             if (this.currentQuestionIndex > 0) {
                 this.currentQuestionIndex--;
+            }
+        },
+
+        selectTest() {
+            // Učitajte pitanja i odgovore za odabrani test na osnovu selectedTestId
+            if (this.selectedTestId !== null) {
+                axios
+                    .get(`/dohvatiTestove/${this.selectedTestId}`)
+                    .then((response) => {
+                        this.tests = response.data;
+                        this.showTest=true,
+                        this.currentQuestionIndex = 0; // Resetujte indeks pitanja na početak
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
             }
         },
     },

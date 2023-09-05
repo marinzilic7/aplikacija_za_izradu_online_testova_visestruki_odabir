@@ -41,9 +41,9 @@ class TestController extends Controller
     }
 
 
-    public function dohvatiTestove()
+    public function dohvatiTestove($id)
     {
-        $test = Test::with('user', 'questions.answers')->find(1);
+        $test = Test::with('user', 'questions.answers')->find($id);
         return response()->json($test);
     }
 }
