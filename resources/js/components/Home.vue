@@ -21,18 +21,26 @@
                                     class="mt-1 ml-2"
                                     v-if="tests.questions.length > 0"
                                 >
-                                    {{ tests.questions[0].pitanje }}
+                                    {{
+                                        tests.questions[currentQuestionIndex]
+                                            .pitanje
+                                    }}
                                 </h5>
                             </div>
                             <div
-                                v-for="answer in tests.questions[0].answers"
+                                v-for="answer in tests.questions[
+                                    currentQuestionIndex
+                                ].answers"
                                 :key="answer.id"
                             >
                                 <label class="radio">
                                     <input
                                         type="radio"
                                         :name="
-                                            'answer_' + tests.questions[0].id
+                                            'answer_' +
+                                            tests.questions[
+                                                currentQuestionIndex
+                                            ].id
                                         "
                                         :value="answer.id"
                                     />
@@ -46,12 +54,14 @@
                             <button
                                 class="btn btn-primary d-flex align-items-center btn-danger"
                                 type="button"
+                                @click="previousQuestion"
                             >
                                 Previous
                             </button>
                             <button
                                 class="btn btn-primary border-success align-items-center btn-success"
                                 type="button"
+                                @click="nextQuestion"
                             >
                                 Next
                             </button>
@@ -68,6 +78,7 @@ export default {
     data() {
         return {
             tests: [],
+            currentQuestionIndex: 0, // Dodajte trenutni indeks pitanja
         };
     },
     created() {
@@ -87,6 +98,18 @@ export default {
                 .catch((error) => {
                     console.log(error);
                 });
+        },
+
+        nextQuestion() {
+            if (this.currentQuestionIndex < this.tests.questions.length - 1) {
+                this.currentQuestionIndex++;
+            }
+        },
+
+        previousQuestion() {
+            if (this.currentQuestionIndex > 0) {
+                this.currentQuestionIndex--;
+            }
         },
     },
 };
