@@ -27,15 +27,23 @@ class TestController extends Controller
         return response()->json(['poruka' => 'Test dodan']);
     }
 
-    public function getTest(){
-        $test = Test::with('user')->get();
+    public function getTest()
+    {
+        $test = Test::with('user', 'questions', 'answers')->get();
         return response()->json($test);
     }
 
-    public function deleteTest($id){
+    public function deleteTest($id)
+    {
         $test = Test::findorFail($id);
         $test->delete();
         return response()->json(['poruka' => 'Test izbrisan']);
     }
 
+
+    public function dohvatiTestove()
+    {
+        $test = Test::with('user', 'questions.answers')->find(1);
+        return response()->json($test);
+    }
 }

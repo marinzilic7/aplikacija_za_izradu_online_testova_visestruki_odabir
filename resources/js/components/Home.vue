@@ -1,65 +1,42 @@
 <template>
     <div>
         <div class="container mt-5">
-            <div class="d-flex justify-content-center row  ">
+            <div class="d-flex justify-content-center row">
                 <div class="col-md-10 col-lg-10">
                     <div class="border shadow-lg">
                         <div class="question bg-white p-3 border-bottom">
                             <div
-                                class="d-flex flex-row justify-content-between align-items-center mcq"
+                                class="d-flex flex-row justify-content-between align-items-center"
                             >
-                                <h4>TestApp</h4>
-                                <span>(5 of 20)</span>
+                                <h4>{{ tests.ime }}</h4>
                             </div>
+                            <p>{{ tests.opis }}</p>
                         </div>
                         <div class="question bg-white p-3 border-bottom">
                             <div
                                 class="d-flex flex-row align-items-center question-title"
                             >
                                 <h3 class="text-danger">Q.</h3>
-                                <h5 class="mt-1 ml-2">
-                                    Which of the following country has largest
-                                    population?
+                                <h5
+                                    class="mt-1 ml-2"
+                                    v-if="tests.questions.length > 0"
+                                >
+                                    {{ tests.questions[0].pitanje }}
                                 </h5>
                             </div>
-                            <div class="ans ml-2">
+                            <div
+                                v-for="answer in tests.questions[0].answers"
+                                :key="answer.id"
+                            >
                                 <label class="radio">
                                     <input
                                         type="radio"
-                                        name="brazil"
-                                        value="brazil"
+                                        :name="
+                                            'answer_' + tests.questions[0].id
+                                        "
+                                        :value="answer.id"
                                     />
-                                    <span>Brazil</span>
-                                </label>
-                            </div>
-                            <div class="ans ml-2">
-                                <label class="radio">
-                                    <input
-                                        type="radio"
-                                        name="Germany"
-                                        value="Germany"
-                                    />
-                                    <span>Germany</span>
-                                </label>
-                            </div>
-                            <div class="ans ml-2">
-                                <label class="radio">
-                                    <input
-                                        type="radio"
-                                        name="Indonesia"
-                                        value="Indonesia"
-                                    />
-                                    <span>Indonesia</span>
-                                </label>
-                            </div>
-                            <div class="ans ml-2">
-                                <label class="radio">
-                                    <input
-                                        type="radio"
-                                        name="Russia"
-                                        value="Russia"
-                                    />
-                                    <span>Russia</span>
+                                    {{ answer.odgovor }}
                                 </label>
                             </div>
                         </div>
@@ -70,8 +47,9 @@
                                 class="btn btn-primary d-flex align-items-center btn-danger"
                                 type="button"
                             >
-                                Previous</button
-                            ><button
+                                Previous
+                            </button>
+                            <button
                                 class="btn btn-primary border-success align-items-center btn-success"
                                 type="button"
                             >
@@ -85,6 +63,33 @@
     </div>
 </template>
 
-<script setup></script>
+<script>
+export default {
+    data() {
+        return {
+            tests: [],
+        };
+    },
+    created() {
+        this.dohvatiTestove();
+    },
+    methods: {
+        dohvatiTestove() {
+            axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
+            axios
+                .get("/dohvatiTestove/1")
+                .then((response) => {
+                    this.tests = response.data;
+                    console.log(response.data);
+
+                    console.log(response.data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        },
+    },
+};
+</script>
 
 <style lang="scss" scoped></style>

@@ -16,9 +16,16 @@ class Test extends Model
         return $this->belongsTo(User::class,'user_id');
     }
 
-    public function question()
+    public function questions()
     {
         return $this->hasMany(Question::class);
     }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class);
+    }
+
+
     use HasFactory;
 }
