@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Answer extends Model
 {
     protected $fillable = [
-        'question_id', 'test_id','odgovor', 'tocanOdgovor'
+        'question_id', 'test_id','odgovor', 'tocanOdgovor',
     ];
 
     public function question()

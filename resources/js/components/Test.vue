@@ -144,7 +144,19 @@
                                 <p v-if="errors.pitanje" class="text-danger">
                                     {{ errors.pitanje[0] }}
                                 </p>
-
+                                <div class="form-group mt-3">
+                                <label for="exampleInputEmail1"
+                                    >Koliko pitanje ima bodova?</label
+                                >
+                                <input
+                                    type="number"
+                                    class="form-control"
+                                    id="exampleInputEmail1"
+                                    aria-describedby="emailHelp"
+                                    placeholder="Unesite odgovor za odabrano pitanje"
+                                    v-model="pitanje.bodovi"
+                                />
+                            </div>
                                 <button
                                     type="submit"
                                     class="btn btn-primary mt-3 w-100"
@@ -246,15 +258,16 @@
                             <p v-if="errors.odgovor" class="text-danger">
                                 {{ errors.odgovor[0] }}
                             </p>
+
                             <div class="form-group mt-3">
                                 <label for="exampleInputEmail1"
                                     >Tocan odgovor?</label
                                 >
                                 <select
-                                    name=""
-                                    id=""
+
                                     v-model="answer.tocanOdgovor"
                                 >
+
                                     <option value="Da">Da</option>
                                     <option value="Ne">Ne</option>
                                 </select>
@@ -307,10 +320,12 @@ export default {
             pitanje: {
                 test_id: "",
                 pitanje: "",
+                bodovi:"",
             },
 
             pitanja: [],
             successPitanje: false,
+
 
             /* Odgovor */
 
@@ -319,6 +334,7 @@ export default {
                 test_id: "",
                 odgovor: "",
                 tocanOdgovor: "",
+
             },
 
             successAnswer: false,
@@ -402,6 +418,7 @@ export default {
             const Pitanje = {
                 test_id: this.pitanje.test_id,
                 pitanje: this.pitanje.pitanje,
+                bodovi: this.pitanje.bodovi,
             };
 
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
@@ -418,6 +435,7 @@ export default {
                     this.form = {
                         test_id: "",
                         pitanje: "",
+                        bodovi:"",
                     };
                     this.errors = {};
                 })
@@ -460,6 +478,7 @@ export default {
                 test_id: this.answer.test_id,
                 odgovor: this.answer.odgovor,
                 tocanOdgovor: this.answer.tocanOdgovor,
+
             };
 
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
@@ -478,6 +497,7 @@ export default {
                         test_id: "",
                         odgovor: "",
                         tocanOdgovor: "",
+
                     };
                     this.errors = {};
                 })

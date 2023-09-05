@@ -14,10 +14,12 @@ class QuestionController extends Controller
             [
                 'test_id' => 'required',
                 'pitanje' => 'required',
+                'bodovi' => 'required',
 
             ],
             [
-                'pitanje.required' => 'Obazeno.',
+                'pitanje.required' => 'Obavezno.',
+                'bodovi.required' => 'Obavezno.',
 
             ]
         );

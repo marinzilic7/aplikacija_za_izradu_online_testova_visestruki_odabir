@@ -17,10 +17,12 @@ class AnswerController extends Controller
                 'odgovor' => 'required',
                 'tocanOdgovor' => 'required',
 
+
             ],
             [
-                'odgovor.required' => 'Obazeno.',
-                'tocanOdgovor.required' => 'Obazeno.',
+                'odgovor.required' => 'Obavezno.',
+                'tocanOdgovor.required' => 'Obavezno.',
+
 
             ]
         );

@@ -1,7 +1,7 @@
 <template>
     <div class="container mt-5 d-flex justify-content-center">
         <div class="row col-lg-4">
-            <select v-model="selectedTestId" @change="selectTest" >
+            <select v-model="selectedTestId" @change="selectTest">
                 <option disabled selected value="">Odaberi test</option>
                 <option v-for="test in testovi" :value="test.id">
                     {{ test.ime }}
@@ -19,10 +19,19 @@
                                 class="d-flex flex-row justify-content-between align-items-center"
                             >
                                 <h4>{{ tests.ime }}</h4>
-                                <p><span>{{trenutniBroj}}</span> of  {{ tests.questions.length }} </p>
-
+                                <p>
+                                    <span>{{ trenutniBroj }}</span> of
+                                    {{ tests.questions.length }}
+                                </p>
                             </div>
                             <p>{{ tests.opis }}</p>
+                            <p>
+                                Bodovi
+                                <span>{{
+                                    tests.questions[currentQuestionIndex].bodovi
+                                }}</span>
+                                od {{ zbrojiBodove }}
+                            </p>
                         </div>
                         <div class="question bg-white p-3 border-bottom">
                             <div
@@ -92,9 +101,11 @@ export default {
             tests: [],
             testovi: [],
             currentQuestionIndex: 0, // Dodajte trenutni indeks pitanja
-            selectedTestId: '',
-            showTest:false,
-            trenutniBroj:1,
+            selectedTestId: "",
+            showTest: false,
+            trenutniBroj: 1,
+            sumPoints: null,
+            zbrojiBodove:null,
         };
     },
     created() {
@@ -145,8 +156,16 @@ export default {
                     .get(`/dohvatiTestove/${this.selectedTestId}`)
                     .then((response) => {
                         this.tests = response.data;
-                        this.showTest=true,
-                        this.currentQuestionIndex = 0; // Resetujte indeks pitanja na početak
+
+                        this.tests.questions.forEach(
+                            (question) => {
+                                console.log("Bodovi",question.bodovi);
+                                this.zbrojiBodove = question.bodovi + this.zbrojiBodove
+                                console.log("Zbrojeni bodovi su", this.zbrojiBodove)
+                            }
+                        );
+
+                        (this.showTest = true), (this.currentQuestionIndex = 0); // Resetujte indeks pitanja na početak
                     })
                     .catch((error) => {
                         console.log(error);
