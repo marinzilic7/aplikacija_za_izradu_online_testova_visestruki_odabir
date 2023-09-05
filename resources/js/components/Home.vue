@@ -56,6 +56,13 @@
                             >
                                 <label class="radio">
                                     <input
+                                        :disabled="
+                                            pokaziOdgovor ||
+                                            isAnswerCorrect ||
+                                            tests.questions[
+                                                currentQuestionIndex
+                                            ].isAnswered
+                                        "
                                         type="radio"
                                         :name="
                                             'answer_' +
@@ -63,9 +70,15 @@
                                                 currentQuestionIndex
                                             ].id
                                         "
-                                        :value="answer.id"
+                                        :value="answer.tocanOdgovor"
+                                        v-model="
+                                            selectedAnswerId[
+                                                currentQuestionIndex
+                                            ]
+                                        "
                                     />
                                     {{ answer.odgovor }}
+                                    {{ answer.tocanOdgovor }}
                                 </label>
                             </div>
                         </div>
@@ -79,13 +92,27 @@
                             >
                                 Previous
                             </button>
-                            <button
-                                class="btn btn-primary border-success align-items-center btn-success"
-                                type="button"
-                                @click="nextQuestion"
-                            >
-                                Next
-                            </button>
+                            <div>
+                                <button
+                                    class="btn btn-primary btn-sm me-2"
+                                    @click="spremiOdgovor()"
+                                >
+                                    Spremi
+                                </button>
+                                <button
+                                    class="btn btn-sm btn-primary border-success align-items-center btn-success"
+                                    type="button"
+                                    @click="nextQuestion"
+                                >
+                                    Next
+                                </button>
+                                <span v-if="isAnswerCorrect">
+                                    Odgovor je točan
+                                </span>
+                                <span v-if="pokaziOdgovor">
+                                    Odgovor je netocan
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -105,7 +132,15 @@ export default {
             showTest: false,
             trenutniBroj: 1,
             sumPoints: null,
-            zbrojiBodove:null,
+            zbrojiBodove: null,
+            selectedAnswerId: [],
+            isAnswerCorrect: false,
+            pokaziOdgovor: false,
+            testAnswer: {
+                correct: "",
+            },
+
+            isAnswered: false,
         };
     },
     created() {
@@ -137,6 +172,14 @@ export default {
 
         nextQuestion() {
             if (this.currentQuestionIndex < this.tests.questions.length - 1) {
+                this.tests.questions[
+                    this.currentQuestionIndex
+                ].isAnswered = true;
+
+
+                this.tests.questions[
+                    this.currentQuestionIndex + 1
+                ].isAnswered = false;
                 this.currentQuestionIndex++;
                 this.trenutniBroj++;
             }
@@ -151,26 +194,49 @@ export default {
 
         selectTest() {
             // Učitajte pitanja i odgovore za odabrani test na osnovu selectedTestId
+            this.currentQuestionIndex = 0;
+            this.trenutniBroj = 1;
             if (this.selectedTestId !== null) {
                 axios
                     .get(`/dohvatiTestove/${this.selectedTestId}`)
                     .then((response) => {
                         this.tests = response.data;
 
-                        this.tests.questions.forEach(
-                            (question) => {
-                                console.log("Bodovi",question.bodovi);
-                                this.zbrojiBodove = question.bodovi + this.zbrojiBodove
-                                console.log("Zbrojeni bodovi su", this.zbrojiBodove)
-                            }
-                        );
+                        this.tests.questions.forEach((question) => {
+                            question.isAnswered = false
+                            console.log("Bodovi", question.bodovi);
+                            this.zbrojiBodove =
+                                question.bodovi + this.zbrojiBodove;
+                            console.log(
+                                "Zbrojeni bodovi su",
+                                this.zbrojiBodove
+                            );
+                        });
 
-                        (this.showTest = true), (this.currentQuestionIndex = 0); // Resetujte indeks pitanja na početak
+                        this.showTest = true;
                     })
                     .catch((error) => {
                         console.log(error);
                     });
             }
+        },
+
+        spremiOdgovor() {
+            const selectedAnswerId = this.selectedAnswerId;
+            console.log("ID ODGOVORA", selectedAnswerId);
+            this.pokaziOdgovor = false;
+            if (selectedAnswerId == "Da") {
+                this.isAnswerCorrect = true;
+            } else {
+                this.isAnswerCorrect = false;
+                this.pokaziOdgovor = true;
+            }
+
+
+
+
+
+
         },
     },
 };
