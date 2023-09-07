@@ -40,4 +40,13 @@ class ResultController extends Controller
 
         return response()->json(['results' => $results, 'zbroj' => $zbroj]);
     }
+
+    public function isExist(){
+        $userId = auth()->user()->id;
+        $existUser = Result::where('user_id', $userId)->exists();
+        if($existUser){
+            return response()->json(['existUser' => true]);
+        }
+
+    }
 }

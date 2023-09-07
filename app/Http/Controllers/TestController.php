@@ -29,8 +29,17 @@ class TestController extends Controller
 
     public function getTest()
     {
+
+
+
+
         $test = Test::with('user', 'questions', 'answers')->get();
         return response()->json($test);
+
+
+
+        /* $test = Test::with('user', 'questions', 'answers')->get();
+        return response()->json($test); */
     }
 
     public function deleteTest($id)

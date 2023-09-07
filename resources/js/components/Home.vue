@@ -19,7 +19,7 @@
                                 v-if="!isTestFinished"
                                 class="d-flex flex-row justify-content-between align-items-center"
                             >
-                                <h4>{{ tests.ime }}</h4>
+                                <h6>{{ tests.ime }}</h6>
                                 <p>
                                     <span class="text-warning">{{
                                         trenutniBroj
@@ -39,7 +39,6 @@
                                                     <th scope="col">Pitanje</th>
                                                     <th scope="col">Odgovor</th>
                                                     <th scope="col">Bodovi</th>
-                                                    <th>Ukupno bodova</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -56,10 +55,32 @@
                                                     <td>
                                                         {{ result.zbrojBodova }}
                                                     </td>
-                                                    <td>{{ zbroj }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
+                                        <div
+                                            class="d-flex justify-content-between"
+                                        >
+                                            <p>
+                                                Ukupan zbroj bodova
+                                                <span class="text-info">{{
+                                                    zbroj
+                                                }}</span>
+                                                od {{ zbrojiBodove }}
+                                            </p>
+                                            <p
+                                                class="text-success fw-bold"
+                                                v-if="showResults"
+                                            >
+                                                Polozeno
+                                            </p>
+                                            <p
+                                                class="text-danger fw-bold"
+                                                v-if="showNegativeResult"
+                                            >
+                                                Nije polozeno
+                                            </p>
+                                        </div>
                                     </ul>
                                     <p></p>
                                 </div>
@@ -178,13 +199,6 @@
                                 >
                                     Next
                                 </button>
-
-                                <span v-if="isAnswerCorrect">
-                                    Odgovor je točan
-                                </span>
-                                <span v-if="pokaziOdgovor">
-                                    Odgovor je netocan
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -222,11 +236,14 @@ export default {
             showNegativeResult: false,
             pitanja: [],
             results: [],
-            zbroj:null,
+            zbroj: null,
+            existUser: false,
+            existUserMessage: "",
         };
     },
     created() {
         this.dohvatiTestove();
+        this.isExist();
     },
     mounted() {
         this.fetchCsrfToken();
@@ -244,6 +261,7 @@ export default {
                 });
         },
         dohvatiTestove() {
+
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
             axios
                 .get("/getTest")
@@ -262,7 +280,7 @@ export default {
                     console.log(response.data);
                 })
                 .catch((error) => {
-                    console.log(error);
+                    (this.existUser = true), console.log(error);
                 });
         },
 
@@ -328,9 +346,8 @@ export default {
             selectedAnswerId.forEach((element) => {
                 if (element == "Da") {
                     isCurrentAnswerCorrect = true; // Postavite na true ako je odgovor točan
-                } else if(element = "Ne") {
+                } else if ((element = "Ne")) {
                     isCurrentAnswerCorrect = false;
-
                 }
             });
             let bodPoPitanju;
@@ -338,13 +355,15 @@ export default {
                 this.isAnswerCorrect = true;
                 this.totalPoints +=
                     this.tests.questions[this.currentQuestionIndex].bodovi;
-                bodPoPitanju = this.tests.questions[this.currentQuestionIndex].bodovi
+                bodPoPitanju =
+                    this.tests.questions[this.currentQuestionIndex].bodovi;
                 console.log(this.totalPoints);
             } else if (!isCurrentAnswerCorrect) {
                 this.isAnswerCorrect = false;
                 this.pokaziOdgovor = true;
-                this.tests.questions[this.currentQuestionIndex].bodovi
-                bodPoPitanju = this.tests.questions[this.currentQuestionIndex].bodovi
+                this.tests.questions[this.currentQuestionIndex].bodovi;
+                bodPoPitanju =
+                    this.tests.questions[this.currentQuestionIndex].bodovi;
                 bodPoPitanju = 0;
                 console.log("NIJE TOCNO BRE");
             }
@@ -357,7 +376,7 @@ export default {
                 this.tests.questions[this.currentQuestionIndex].pitanje
             );
             console.log("ODGOVOR NA PITANJE JE", OdgovorNaPitanje);
-            console.log("Na ovaj odgovor dobili ste ---> ", bodPoPitanju );
+            console.log("Na ovaj odgovor dobili ste ---> ", bodPoPitanju);
 
             const Podaci = {
                 user_id: "",
@@ -418,6 +437,14 @@ export default {
         newTest() {
             window.location.reload();
         },
+
+        isExist(){
+            axios.get("/isExist").then((response) => {
+                this.existUserMessage = response.data.existUser;
+                this.existUser = true
+
+            });
+        }
     },
 };
 </script>

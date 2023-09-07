@@ -36,6 +36,7 @@ Route::post('/addAnswer',[AnswerController::class,'addAnswer']);
 
 Route::post('/rezultat',[ResultController::class,'rezultat']);
 Route::get('/getResults',[ResultController::class,'getResults']);
+Route::get('/isExist',[ResultController::class,'isExist']);
 
 Route::get('/{any}', function () {
     return view('welcome');
