@@ -7,7 +7,7 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
 
 use Illuminate\Support\Facades\Route;
-
+use LDAP\Result;
 
 /* Registracija i prijava */
 
@@ -35,6 +35,7 @@ Route::post('/addAnswer',[AnswerController::class,'addAnswer']);
 /* Rezultat */
 
 Route::post('/rezultat',[ResultController::class,'rezultat']);
+Route::get('/getResults',[ResultController::class,'getResults']);
 
 Route::get('/{any}', function () {
     return view('welcome');

@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('results', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('test_id');
             $table->string('pitanje');
             $table->string('odgovor');
             $table->integer('zbrojBodova');
             $table->timestamps();
+            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('test_id')->references('id')->on('tests')->cascadeOnDelete();
 
         });

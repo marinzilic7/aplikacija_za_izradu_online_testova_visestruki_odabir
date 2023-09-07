@@ -28,44 +28,43 @@
                                     {{ tests.questions.length }}
                                 </p>
                             </div>
-                            <div v-if="isTestFinished">
-                                <p>
-                                    <span class="font-monospace"
-                                        >Korisnik:</span
-                                    >
-                                    {{ tests.user.ime }}
-                                </p>
-                                <p>
-                                    <span class="font-monospace"
-                                        >Ime testa:</span
-                                    >
-                                    {{ tests.ime }}
-                                </p>
-                                <span class="font-monospace">Pitanja:</span>
-                                <ul>
-                                    <li v-for="pitanje in pitanja">
-                                        {{ pitanje }}
-                                    </li>
-                                </ul>
-                                <p v-if="showResults">
-                                    <span class="font-monospace"
-                                        >Rezultat:</span
-                                    >
-                                    {{ totalPoints }} bodova od
-                                    {{ zbrojiBodove }}
-                                </p>
-                                <p v-if="showNegativeResult">
-                                    <span class="font-monospace">Rezultat:</span
-                                    >{{ totalPoints }} bodova od
-                                    {{ zbrojiBodove }}
-                                </p>
-                                <button
-                                    @click="newTest"
-                                    class="btn btn-primary"
-                                >
-                                    Novi test
-                                </button>
+                            <div>
+                                <div v-if="isTestFinished">
+                                    <ul>
+                                        <h3>Korisnik : {{ tests.user.ime }}</h3>
+
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Pitanje</th>
+                                                    <th scope="col">Odgovor</th>
+                                                    <th scope="col">Bodovi</th>
+                                                    <th>Ukupno bodova</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr
+                                                    v-for="result in results"
+                                                    :key="result.id"
+                                                >
+                                                    <td>
+                                                        {{ result.pitanje }}
+                                                    </td>
+                                                    <td>
+                                                        {{ result.odgovor }}
+                                                    </td>
+                                                    <td>
+                                                        {{ result.zbrojBodova }}
+                                                    </td>
+                                                    <td>{{ zbroj }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </ul>
+                                    <p></p>
+                                </div>
                             </div>
+
                             <p v-if="!isTestFinished">{{ tests.opis }}</p>
                             <div
                                 v-if="!isTestFinished"
@@ -221,11 +220,9 @@ export default {
             isTestFinished: false,
             showResults: false,
             showNegativeResult: false,
-
             pitanja: [],
-
-
-
+            results: [],
+            zbroj:null,
         };
     },
     created() {
@@ -331,19 +328,24 @@ export default {
             selectedAnswerId.forEach((element) => {
                 if (element == "Da") {
                     isCurrentAnswerCorrect = true; // Postavite na true ako je odgovor točan
-                } else {
+                } else if(element = "Ne") {
                     isCurrentAnswerCorrect = false;
+
                 }
             });
-
+            let bodPoPitanju;
             if (isCurrentAnswerCorrect) {
                 this.isAnswerCorrect = true;
                 this.totalPoints +=
                     this.tests.questions[this.currentQuestionIndex].bodovi;
+                bodPoPitanju = this.tests.questions[this.currentQuestionIndex].bodovi
                 console.log(this.totalPoints);
-            } else if (isCurrentAnswerCorrect) {
+            } else if (!isCurrentAnswerCorrect) {
                 this.isAnswerCorrect = false;
                 this.pokaziOdgovor = true;
+                this.tests.questions[this.currentQuestionIndex].bodovi
+                bodPoPitanju = this.tests.questions[this.currentQuestionIndex].bodovi
+                bodPoPitanju = 0;
                 console.log("NIJE TOCNO BRE");
             }
 
@@ -355,14 +357,15 @@ export default {
                 this.tests.questions[this.currentQuestionIndex].pitanje
             );
             console.log("ODGOVOR NA PITANJE JE", OdgovorNaPitanje);
-            console.log("Bodova po pitanju", this.totalPoints);
-
+            console.log("Na ovaj odgovor dobili ste ---> ", bodPoPitanju );
 
             const Podaci = {
-                test_id:this.tests.id,
-                pitanje:this.tests.questions[this.currentQuestionIndex].pitanje,
-                odgovor:OdgovorNaPitanje,
-                zbrojBodova:this.totalPoints,
+                user_id: "",
+                test_id: this.tests.id,
+                pitanje:
+                    this.tests.questions[this.currentQuestionIndex].pitanje,
+                odgovor: OdgovorNaPitanje,
+                zbrojBodova: bodPoPitanju,
             };
 
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
@@ -373,11 +376,11 @@ export default {
                     this.poruka = response.data.poruka;
 
                     this.form = {
+                        user_id: "",
                         test_id: "",
                         pitanje: "",
                         odgovor: "",
                         zbrojBodova: "",
-
                     };
                     this.errors = {};
                 })
@@ -401,10 +404,17 @@ export default {
                 this.showNegativeResult = true;
             }
             this.isTestFinished = true;
-
+            this.getResults();
             console.log(this.pitanja);
         },
 
+        getResults() {
+            axios.get("/getResults").then((response) => {
+                this.results = response.data.results;
+
+                this.zbroj = response.data.zbroj;
+            });
+        },
         newTest() {
             window.location.reload();
         },

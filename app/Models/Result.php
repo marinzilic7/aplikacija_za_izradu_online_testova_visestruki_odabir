@@ -8,12 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Result extends Model
 {
     protected $fillable = [
-        'test_id', 'pitanje', 'odgovor', 'zbrojBodova',
+        'user_id','test_id', 'pitanje', 'odgovor', 'zbrojBodova',
     ];
 
     public function test()
     {
         return $this->belongsTo(Test::class,'test_id');
+    }
+
+    public function users()
+    {
+        return $this->belongsTo(User::class,'user_id');
     }
     use HasFactory;
 }

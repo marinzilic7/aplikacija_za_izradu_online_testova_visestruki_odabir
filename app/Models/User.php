@@ -19,6 +19,11 @@ class User extends Model implements Authenticatable
         return $this->hasMany(Test::class);
     }
 
+    public function results()
+    {
+        return $this->hasMany(Result::class);
+    }
+
     use HasFactory;
 }
 
