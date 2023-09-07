@@ -223,7 +223,7 @@ export default {
                         (test) => test.id === this.currentlekcijaId
                     );
                     if (index !== -1) {
-                        /* this.courses.splice(index, 1, updatedCourse); */
+
                         this.tests[index].ime = updatedTest.ime;
                         this.tests[index].opis = updatedTest.opis;
                     }
