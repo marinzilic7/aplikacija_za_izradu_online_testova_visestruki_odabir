@@ -55,4 +55,22 @@ class TestController extends Controller
         $test = Test::with('user', 'questions.answers')->find($id);
         return response()->json($test);
     }
+
+    public function updateTest(Request $request, $id){
+
+        $test = Test::findOrFail($id);
+        $data = $request->validate([
+            'ime' => 'required|string',
+            'opis' => 'required|string',
+
+        ]);
+
+        $test->ime=$data['ime'];
+        $test->opis=$data['opis'];
+        $test->save();
+        return response()->json([
+            'poruka' => 'Test uspjesno uredjen',
+            'test' => $test,
+        ]);
+    }
 }

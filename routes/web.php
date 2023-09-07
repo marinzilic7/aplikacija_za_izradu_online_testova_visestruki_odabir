@@ -22,6 +22,7 @@ Route::post('/addTest',[TestController::class,'addTest']);
 Route::get('/getTest',[TestController::class,'getTest']);
 Route::post('/deleteTest/{id}',[TestController::class,'deleteTest']);
 Route::get('/dohvatiTestove/{id}',[TestController::class,'dohvatiTestove']);
+Route::post('/updateTest/{id}',[TestController::class,'updateTest']);
 
 /* Pitanje */
 
