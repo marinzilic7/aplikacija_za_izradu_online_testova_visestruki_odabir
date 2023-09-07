@@ -23,30 +23,33 @@ class ResultController extends Controller
         return response()->json(['poruka' => 'Test dodan']);
     }
 
-    public function getResults()
+    public function getResults($id)
     {
 
-
+        $testId = $id;
         $userId = auth()->user()->id;
 
 
         $results = Result::where('user_id', $userId)
-            ->with('users')
+            ->with('users')->where('test_id',$testId)
             ->get();
 
-        $zbroj = Result::where('user_id', $userId)->sum('zbrojBodova');
+        $zbroj = Result::where('user_id', $userId)->where('test_id',$testId)->sum('zbrojBodova');
 
 
 
         return response()->json(['results' => $results, 'zbroj' => $zbroj]);
     }
 
-    public function isExist(){
+    public function isExist($id)
+    {
         $userId = auth()->user()->id;
-        $existUser = Result::where('user_id', $userId)->exists();
-        if($existUser){
+        $testId = $id;
+        $existUser = Result::where('user_id', $userId)
+            ->where('test_id', $testId)
+            ->exists();
+        if ($existUser) {
             return response()->json(['existUser' => true]);
         }
-
     }
 }

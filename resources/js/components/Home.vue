@@ -1,7 +1,7 @@
 <template>
     <div class="container mt-5 d-flex justify-content-center">
         <div class="row col-lg-4">
-            <select v-model="selectedTestId" @change="selectTest">
+            <select :disabled="workingTest" v-model="selectedTestId" @change="selectTest">
                 <option disabled selected value="">Odaberi test</option>
                 <option v-for="test in testovi" :value="test.id">
                     {{ test.ime }}
@@ -49,8 +49,11 @@
                                                     <td>
                                                         {{ result.pitanje }}
                                                     </td>
-                                                    <td>
-                                                        {{ result.odgovor }}
+                                                    <td v-if="(result.odgovor == 'Da')">
+                                                        <p class="text-success">Odgovor točan</p>
+                                                    </td>
+                                                    <td v-else>
+                                                        <p class="text-danger">Odgovor nije točan</p>
                                                     </td>
                                                     <td>
                                                         {{ result.zbrojBodova }}
@@ -81,6 +84,7 @@
                                                 Nije polozeno
                                             </p>
                                         </div>
+                                        <button class="btn btn-sm btn-outline-primary" @click="newTest">Povratak</button>
                                     </ul>
                                     <p></p>
                                 </div>
@@ -162,7 +166,7 @@
                         >
                             <button
                                 :disabled="isTestFinished || existUserMessage"
-                                class="btn btn-primary d-flex align-items-center btn-danger"
+                                class="btn btn-sm btn-primary d-flex align-items-center btn-danger"
                                 type="button"
                                 @click="previousQuestion"
                             >
@@ -250,6 +254,8 @@ export default {
             zbroj: null,
             existUser: false,
             existUserMessage: "",
+            isExistTest:null,
+            workingTest:false,
         };
     },
     created() {
@@ -320,11 +326,12 @@ export default {
         },
 
         selectTest() {
-            // Učitajte pitanja i odgovore za odabrani test na osnovu selectedTestId
+            this.getResults();
             this.currentQuestionIndex = 0;
             this.trenutniBroj = 1;
             this.zbrojiBodove = null;
-
+            this.isExistTest = this.selectedTestId;
+            this.isExist();
             if (this.selectedTestId !== null) {
                 axios
                     .get(`/dohvatiTestove/${this.selectedTestId}`)
@@ -347,6 +354,7 @@ export default {
         },
 
         spremiOdgovor() {
+            this.workingTest = true;
             console.log("Prije novog spremanja", this.totalPoints);
             const selectedAnswerId = this.selectedAnswerId;
             /* console.log("ID ODGOVORA", selectedAnswerId); */
@@ -438,7 +446,7 @@ export default {
         },
 
         getResults() {
-            axios.get("/getResults").then((response) => {
+            axios.get(`/getResults/${this.isExistTest}`).then((response) => {
                 this.results = response.data.results;
 
                 this.zbroj = response.data.zbroj;
@@ -449,8 +457,9 @@ export default {
         },
 
         isExist() {
-            axios.get("/isExist").then((response) => {
+            axios.get(`/isExist/${this.isExistTest}`).then((response) => {
                 this.existUserMessage = response.data.existUser;
+                console.log("EXIST IS ", this.isExistTest)
             });
         },
     },

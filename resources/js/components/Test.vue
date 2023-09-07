@@ -336,7 +336,7 @@ export default {
                 tocanOdgovor: "",
 
             },
-
+            successQuestion:false,
             successAnswer: false,
         };
     },
@@ -488,9 +488,9 @@ export default {
                 .then((response) => {
                     this.poruka = response.data.poruka;
                     this.successAnswer = true;
-                    this.getodgovor();
+
                     setTimeout(() => {
-                        this.successAnswer = false; // Sakrij poruku
+                        this.successAnswer = false;
                     }, 1500);
                     this.form = {
                         question_id: "",
