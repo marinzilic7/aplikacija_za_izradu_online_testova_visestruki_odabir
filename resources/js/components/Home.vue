@@ -16,32 +16,88 @@
                     <div class="border shadow-lg">
                         <div class="question bg-white p-3 border-bottom">
                             <div
+                                v-if="!isTestFinished"
                                 class="d-flex flex-row justify-content-between align-items-center"
                             >
                                 <h4>{{ tests.ime }}</h4>
                                 <p>
-                                    <span>{{ trenutniBroj }}</span> of
+                                    <span class="text-warning">{{
+                                        trenutniBroj
+                                    }}</span>
+                                    od
                                     {{ tests.questions.length }}
                                 </p>
                             </div>
-                            <p>{{ tests.opis }}</p>
-                            <p>
-                                Bodovi
-                                <span>{{
-                                    tests.questions[currentQuestionIndex].bodovi
-                                }}</span>
-                                od {{ zbrojiBodove }}
-                            </p>
+                            <div v-if="isTestFinished">
+                                <p>
+                                    <span class="font-monospace"
+                                        >Korisnik:</span
+                                    >
+                                    {{ tests.user.ime }}
+                                </p>
+                                <p>
+                                    <span class="font-monospace"
+                                        >Ime testa:</span
+                                    >
+                                    {{ tests.ime }}
+                                </p>
+                                <span class="font-monospace">Pitanja:</span>
+                                <ul>
+                                    <li v-for="pitanje in pitanja">
+                                        {{ pitanje }}
+                                    </li>
+                                </ul>
+                                <p v-if="showResults">
+                                    <span class="font-monospace"
+                                        >Rezultat:</span
+                                    >
+                                    {{ totalPoints }} bodova od
+                                    {{ zbrojiBodove }}
+                                </p>
+                                <p v-if="showNegativeResult">
+                                    <span class="font-monospace">Rezultat:</span
+                                    >{{ totalPoints }} bodova od
+                                    {{ zbrojiBodove }}
+                                </p>
+                                <button
+                                    @click="newTest"
+                                    class="btn btn-primary"
+                                >
+                                    Novi test
+                                </button>
+                            </div>
+                            <p v-if="!isTestFinished">{{ tests.opis }}</p>
+                            <div
+                                v-if="!isTestFinished"
+                                class="d-flex justify-content-between"
+                            >
+                                <p>
+                                    Bodovi:
+                                    <span class="text-success">{{
+                                        tests.questions[currentQuestionIndex]
+                                            .bodovi
+                                    }}</span>
+                                </p>
+                                <p>
+                                    Ukupno bodova:
+                                    <span class="text-success">{{
+                                        zbrojiBodove
+                                    }}</span>
+                                </p>
+                            </div>
                         </div>
-                        <div class="question bg-white p-3 border-bottom">
+                        <div
+                            v-if="!isTestFinished"
+                            class="question bg-white p-3 border-bottom"
+                        >
                             <div
                                 class="d-flex flex-row align-items-center question-title"
                             >
-                                <h3 class="text-danger">Q.</h3>
                                 <h5
                                     class="mt-1 ml-2"
                                     v-if="tests.questions.length > 0"
                                 >
+                                    <span class="text-success"> Pitanje: </span>
                                     {{
                                         tests.questions[currentQuestionIndex]
                                             .pitanje
@@ -81,9 +137,11 @@
                             </div>
                         </div>
                         <div
+                            v-if="!isTestFinished"
                             class="d-flex flex-row justify-content-between align-items-center p-3 bg-white"
                         >
                             <button
+                                :disabled="isTestFinished"
                                 class="btn btn-primary d-flex align-items-center btn-danger"
                                 type="button"
                                 @click="previousQuestion"
@@ -103,16 +161,25 @@
                                     Spremi
                                 </button>
 
-                                <button v-if="(this.currentQuestionIndex === this.tests.questions.length - 1)" class="btn btn-warning btn-sm" @click="prikaziRezultat()">
+                                <button
+                                    v-if="
+                                        this.currentQuestionIndex ===
+                                        this.tests.questions.length - 1
+                                    "
+                                    class="btn btn-warning btn-sm"
+                                    @click="prikaziRezultat()"
+                                >
                                     Zavrsi test
                                 </button>
-                                <button v-else
+                                <button
+                                    v-else
                                     class="btn btn-sm btn-primary border-success align-items-center btn-success"
                                     type="button"
                                     @click="nextQuestion"
                                 >
                                     Next
                                 </button>
+
                                 <span v-if="isAnswerCorrect">
                                     Odgovor je točan
                                 </span>
@@ -120,18 +187,17 @@
                                     Odgovor je netocan
                                 </span>
                             </div>
-
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div v-if="showResults">Polozili ste! Imali ste {{ totalPoints }} bodova od {{ zbrojiBodove }}</div>
-    <div v-if="showNegativeResult"> Niste polozili! Imali ste {{ totalPoints }} bodova od {{ zbrojiBodove }} </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
     data() {
         return {
@@ -152,16 +218,34 @@ export default {
             answeredQuestions: [],
             isAnswered: false,
             totalPoints: 0,
-            isTestFinished:false,
-            showResults:false,
-            showNegativeResult:false,
+            isTestFinished: false,
+            showResults: false,
+            showNegativeResult: false,
+
+            pitanja: [],
+
+
+
         };
     },
     created() {
         this.dohvatiTestove();
     },
+    mounted() {
+        this.fetchCsrfToken();
+    },
 
     methods: {
+        fetchCsrfToken() {
+            axios
+                .get("/sanctum/csrf-cookie")
+                .then((response) => {
+                    this.csrfToken = response.data.csrf_token;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
         dohvatiTestove() {
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
             axios
@@ -186,6 +270,10 @@ export default {
         },
 
         nextQuestion() {
+            this.pitanja.push(
+                this.tests.questions[this.currentQuestionIndex].pitanje
+            );
+
             if (this.currentQuestionIndex < this.tests.questions.length - 1) {
                 this.tests.questions[
                     this.currentQuestionIndex
@@ -234,17 +322,17 @@ export default {
         },
 
         spremiOdgovor() {
-
             console.log("Prije novog spremanja", this.totalPoints);
             const selectedAnswerId = this.selectedAnswerId;
             /* console.log("ID ODGOVORA", selectedAnswerId); */
-
+            const OdgovorNaPitanje =
+                this.selectedAnswerId[this.currentQuestionIndex];
             let isCurrentAnswerCorrect = false; // Dodajte varijablu za trenutni odgovor
             selectedAnswerId.forEach((element) => {
                 if (element == "Da") {
                     isCurrentAnswerCorrect = true; // Postavite na true ako je odgovor točan
-                }else{
-                    isCurrentAnswerCorrect=false;
+                } else {
+                    isCurrentAnswerCorrect = false;
                 }
             });
 
@@ -253,27 +341,73 @@ export default {
                 this.totalPoints +=
                     this.tests.questions[this.currentQuestionIndex].bodovi;
                 console.log(this.totalPoints);
-            } else if(isCurrentAnswerCorrect) {
+            } else if (isCurrentAnswerCorrect) {
                 this.isAnswerCorrect = false;
                 this.pokaziOdgovor = true;
-                console.log("NIJE TOCNO BRE")
+                console.log("NIJE TOCNO BRE");
             }
 
             this.answeredQuestions.push(this.currentQuestionIndex);
+            console.log("--------------------------------------------");
+            console.log("ID TESTAAAAAAAAAAA", this.tests.id);
+            console.log(
+                "PITANJE JE",
+                this.tests.questions[this.currentQuestionIndex].pitanje
+            );
+            console.log("ODGOVOR NA PITANJE JE", OdgovorNaPitanje);
+            console.log("Bodova po pitanju", this.totalPoints);
 
+
+            const Podaci = {
+                test_id:this.tests.id,
+                pitanje:this.tests.questions[this.currentQuestionIndex].pitanje,
+                odgovor:OdgovorNaPitanje,
+                zbrojBodova:this.totalPoints,
+            };
+
+            axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
+
+            axios
+                .post("/rezultat", Podaci)
+                .then((response) => {
+                    this.poruka = response.data.poruka;
+
+                    this.form = {
+                        test_id: "",
+                        pitanje: "",
+                        odgovor: "",
+                        zbrojBodova: "",
+
+                    };
+                    this.errors = {};
+                })
+                .catch((error) => {
+                    if (error.response && error.response.status === 422) {
+                        this.errors = error.response.data.errors;
+                        this.postojiEmail = true;
+                    } else {
+                        console.log(error);
+                    }
+                });
         },
 
-        prikaziRezultat(){
-            let rez = this.zbrojiBodove / 2
-            console.log(this.tests.questions.length)
-            console.log("Ovo je 9 / 3 ", rez)
-            if(this.totalPoints >=  rez){
+        prikaziRezultat() {
+            let rez = this.zbrojiBodove / 2;
+            console.log(this.tests.questions.length);
+            console.log("Ovo je 9 / 3 ", rez);
+            if (this.totalPoints >= rez) {
                 this.showResults = true;
-            }else{
+            } else {
                 this.showNegativeResult = true;
             }
+            this.isTestFinished = true;
 
-        }
+            console.log(this.pitanja);
+        },
+
+        newTest() {
+            window.location.reload();
+        },
     },
 };
 </script>

@@ -26,6 +26,11 @@ class Test extends Model
         return $this->hasMany(Answer::class);
     }
 
+    public function results()
+    {
+        return $this->hasMany(Result::class);
+    }
+
 
     use HasFactory;
 }

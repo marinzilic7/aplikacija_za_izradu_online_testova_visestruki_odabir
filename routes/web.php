@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\ResultController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\UserController;
 
@@ -31,6 +32,9 @@ Route::get('/getPitanje',[QuestionController::class,'getPitanje']);
 
 Route::post('/addAnswer',[AnswerController::class,'addAnswer']);
 
+/* Rezultat */
+
+Route::post('/rezultat',[ResultController::class,'rezultat']);
 
 Route::get('/{any}', function () {
     return view('welcome');
