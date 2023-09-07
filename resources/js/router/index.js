@@ -4,6 +4,7 @@ import RegisterView from '../views/RegisterView.vue'
 import LoginView from '../views/LoginView.vue'
 import TestView from '../views/TestView.vue'
 import TestListView from '../views/TestListView.vue'
+import RezultatiView from '../views/RezultatiView.vue'
 
 
 
@@ -36,6 +37,11 @@ const router = createRouter({
             name: 'test_list',
             component: TestListView
         },
+        {
+            path: '/rezultati',
+            name: 'rezultati',
+            component: RezultatiView
+        }
 
 
 

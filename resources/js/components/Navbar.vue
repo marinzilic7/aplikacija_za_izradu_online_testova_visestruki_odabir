@@ -62,6 +62,15 @@ import { RouterLink, RouterView } from "vue-router";
                             </ul>
                         </div>
                     </li>
+                    <li class="nav-item active">
+                        <RouterLink
+                            class="text-light text-decoration-none nav-link"
+                            to="/rezultati"
+                            >Rezultati</RouterLink
+                        >
+                    </li>
+
+
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li v-if="!isLoggedIn" class="nav-item active">

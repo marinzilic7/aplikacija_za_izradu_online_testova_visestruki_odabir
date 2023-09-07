@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Result;
+use Illuminate\Support\Facades\DB;
 
 class ResultController extends Controller
 {
+
+    private $zbroj;
+
     public function rezultat(Request $request)
     {
         $data = $request->validate([
@@ -15,10 +19,23 @@ class ResultController extends Controller
             'pitanje' => 'required',
             'odgovor' => 'required',
             'zbrojBodova' => 'required',
+            'sumPoints' => '',
         ]);
 
         $result = new Result();
         $data['user_id'] = auth()->id();
+
+        if (array_key_exists('sumPoints', $data)) {
+            if ($data['sumPoints'] == null) {
+                $data['sumPoints'] = $data['zbrojBodova'];
+            } else {
+                $data['sumPoints'] = $this->zbroj;
+            }
+        } else {
+
+            $data['sumPoints'] = $data['zbrojBodova'];
+        }
+
         $result->create($data);
         return response()->json(['poruka' => 'Test dodan']);
     }
@@ -31,14 +48,14 @@ class ResultController extends Controller
 
 
         $results = Result::where('user_id', $userId)
-            ->with('users')->where('test_id',$testId)
+            ->with('users')->where('test_id', $testId)
             ->get();
 
-        $zbroj = Result::where('user_id', $userId)->where('test_id',$testId)->sum('zbrojBodova');
+        $this->zbroj = Result::where('user_id', $userId)->where('test_id', $testId)->sum('zbrojBodova');
 
 
 
-        return response()->json(['results' => $results, 'zbroj' => $zbroj]);
+        return response()->json(['results' => $results, 'zbroj' => $this->zbroj]);
     }
 
     public function isExist($id)
@@ -51,5 +68,15 @@ class ResultController extends Controller
         if ($existUser) {
             return response()->json(['existUser' => true]);
         }
+    }
+
+    public function getRez()
+    {
+        $results = Result::with('users')
+            ->select('user_id', DB::raw('SUM(zbrojBodova) as totalBodova'))
+            ->groupBy('user_id')
+            ->get();
+
+        return response()->json(['results' => $results]);
     }
 }

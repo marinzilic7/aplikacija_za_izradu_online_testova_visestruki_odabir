@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('pitanje');
             $table->string('odgovor');
             $table->integer('zbrojBodova');
+            $table->integer('sumPoints');
             $table->timestamps();
             $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreign('test_id')->references('id')->on('tests')->cascadeOnDelete();

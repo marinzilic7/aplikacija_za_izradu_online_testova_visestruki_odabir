@@ -136,6 +136,7 @@
                             >
                                 <label class="radio">
                                     <input
+                                        class="mt-3"
                                         :disabled="
                                             answeredQuestions.includes(
                                                 currentQuestionIndex
@@ -156,7 +157,7 @@
                                         "
                                     />
                                     {{ answer.odgovor }}
-                                    {{ answer.tocanOdgovor }}
+
                                 </label>
                             </div>
                         </div>

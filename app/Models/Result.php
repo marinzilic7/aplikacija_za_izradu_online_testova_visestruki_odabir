@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Result extends Model
 {
     protected $fillable = [
-        'user_id','test_id', 'pitanje', 'odgovor', 'zbrojBodova',
+        'user_id','test_id', 'pitanje', 'odgovor', 'zbrojBodova', 'sumPoints'
     ];
 
     public function test()
