@@ -1,6 +1,8 @@
 <template>
+
     <div class="container mt-5 d-flex justify-content-center">
         <div class="row col-lg-4">
+            <div v-if="!isLoggedIn" class="alert alert-warning">Obavezna registracija ili  prijava</div>
             <select :disabled="workingTest" v-model="selectedTestId" @change="selectTest">
                 <option disabled selected value="">Odaberi test</option>
                 <option v-for="test in testovi" :value="test.id">
@@ -222,17 +224,20 @@
             </div>
         </div>
     </div>
+
+
 </template>
 
 <script>
 import axios from "axios";
-
+import { mapGetters } from "vuex";
 export default {
     data() {
         return {
+            isLoggedIn: false,
             tests: [],
             testovi: [],
-            currentQuestionIndex: 0, // Dodajte trenutni indeks pitanja
+            currentQuestionIndex: 0,
             selectedTestId: "",
             showTest: false,
             trenutniBroj: 1,
@@ -265,6 +270,12 @@ export default {
     },
     mounted() {
         this.fetchCsrfToken();
+    },
+    computed: {
+        ...mapGetters(["loggedInUser"]),
+        isLoggedIn() {
+            return this.loggedInUser !== null;
+        },
     },
 
     methods: {

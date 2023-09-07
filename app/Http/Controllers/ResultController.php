@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Result;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class ResultController extends Controller
@@ -32,7 +33,6 @@ class ResultController extends Controller
                 $data['sumPoints'] = $this->zbroj;
             }
         } else {
-
             $data['sumPoints'] = $data['zbrojBodova'];
         }
 
@@ -72,11 +72,29 @@ class ResultController extends Controller
 
     public function getRez()
     {
-        $results = Result::with('users')
-            ->select('user_id', DB::raw('SUM(zbrojBodova) as totalBodova'))
-            ->groupBy('user_id')
-            ->get();
+        $users = User::all();
 
-        return response()->json(['results' => $results]);
+        $totals = [];
+
+        foreach ($users as $user) {
+            $hasResults = Result::where('user_id', $user->id)->exists();
+
+            if ($hasResults) {
+                $totalPoints = Result::where('user_id', $user->id)->sum('zbrojBodova');
+
+                $totals[] = [
+                    'user_id' => $user->id,
+                    'ime' => $user->ime,
+                    'ukupniBodovi' => $totalPoints,
+                ];
+            }
+        }
+
+        return response()->json(['totals' => $totals]);
+    }
+
+    public function deleteRez(){
+        Result::truncate();
+        return response()->json(['message' => 'Svi rezultati su izbrisani.']);
     }
 }

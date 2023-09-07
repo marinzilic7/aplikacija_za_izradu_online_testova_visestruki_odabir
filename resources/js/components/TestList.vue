@@ -7,7 +7,8 @@
                     <th scope="col">Korisnik</th>
                     <th scope="col">Naziv</th>
                     <th scope="col">Opis</th>
-                    <th scope="col">Akcije</th>
+                    <th scope="col">Izbrisi</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -24,6 +25,8 @@
                             Izbrisi
                         </button>
                     </td>
+                    <td>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -38,13 +41,31 @@ export default {
         return {
             tests: [],
             user: [],
+            ispit: {
+                ime: "",
+                opis: "",
+            },
+            csrfToken: "",
+            POST: "",
         };
     },
     created() {
         this.getTest();
-
+    },
+    mounted() {
+        this.fetchCsrfToken();
     },
     methods: {
+        fetchCsrfToken() {
+            axios
+                .get("/sanctum/csrf-cookie")
+                .then((response) => {
+                    this.csrfToken = response.data.csrf_token;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
         getTest() {
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
             axios
@@ -79,8 +100,6 @@ export default {
                     console.log(error);
                 });
         },
-
-
     },
 };
 </script>

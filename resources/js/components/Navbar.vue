@@ -5,7 +5,7 @@ import { RouterLink, RouterView } from "vue-router";
 <template>
     <div>
         <nav class="navbar navbar-expand-lg navbar-light bg-primary">
-            <a class="navbar-brand ms-3 text-light" href="#">TestApp</a>
+            <a class="navbar-brand ms-3 text-light" href="/">TestApp</a>
             <button
                 class="navbar-toggler"
                 type="button"
@@ -19,8 +19,8 @@ import { RouterLink, RouterView } from "vue-router";
             </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
+                <ul  v-if="isLoggedIn" class="navbar-nav mr-auto">
+                    <li  class="nav-item active">
                         <RouterLink
                             class="text-light text-decoration-none nav-link"
                             to="/"

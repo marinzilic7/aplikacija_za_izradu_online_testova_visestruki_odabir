@@ -38,6 +38,7 @@ Route::post('/rezultat',[ResultController::class,'rezultat']);
 Route::get('/getResults/{id}',[ResultController::class,'getResults']);
 Route::get('/isExist/{id}',[ResultController::class,'isExist']);
 Route::get('/getRez',[ResultController::class,'getRez']);
+Route::post('/deleteRez',[ResultController::class,'deleteRez']);
 
 Route::get('/{any}', function () {
     return view('welcome');
