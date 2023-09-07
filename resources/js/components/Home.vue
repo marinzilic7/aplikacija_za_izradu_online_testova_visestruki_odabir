@@ -135,7 +135,7 @@
                                         :disabled="
                                             answeredQuestions.includes(
                                                 currentQuestionIndex
-                                            )
+                                            ) || existUserMessage
                                         "
                                         type="radio"
                                         :name="
@@ -161,7 +161,7 @@
                             class="d-flex flex-row justify-content-between align-items-center p-3 bg-white"
                         >
                             <button
-                                :disabled="isTestFinished"
+                                :disabled="isTestFinished || existUserMessage"
                                 class="btn btn-primary d-flex align-items-center btn-danger"
                                 type="button"
                                 @click="previousQuestion"
@@ -173,7 +173,7 @@
                                     :disabled="
                                         answeredQuestions.includes(
                                             currentQuestionIndex
-                                        )
+                                        ) || existUserMessage
                                     "
                                     class="btn btn-primary btn-sm me-2"
                                     @click="spremiOdgovor()"
@@ -182,6 +182,7 @@
                                 </button>
 
                                 <button
+                                    :disabled="existUserMessage"
                                     v-if="
                                         this.currentQuestionIndex ===
                                         this.tests.questions.length - 1
@@ -192,6 +193,7 @@
                                     Zavrsi test
                                 </button>
                                 <button
+                                    :disabled="existUserMessage"
                                     v-else
                                     class="btn btn-sm btn-primary border-success align-items-center btn-success"
                                     type="button"
@@ -199,6 +201,15 @@
                                 >
                                     Next
                                 </button>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <div
+                                v-if="existUserMessage"
+                                class="alert alert-warning col-lg-6 ms-5"
+                            >
+                                Imate pravo na samo jedan pokusaj za rjesavanje
+                                testa!
                             </div>
                         </div>
                     </div>
@@ -261,7 +272,6 @@ export default {
                 });
         },
         dohvatiTestove() {
-
             axios.defaults.headers.common["X-CSRF-TOKEN"] = this.csrfToken;
             axios
                 .get("/getTest")
@@ -438,13 +448,11 @@ export default {
             window.location.reload();
         },
 
-        isExist(){
+        isExist() {
             axios.get("/isExist").then((response) => {
                 this.existUserMessage = response.data.existUser;
-                this.existUser = true
-
             });
-        }
+        },
     },
 };
 </script>
